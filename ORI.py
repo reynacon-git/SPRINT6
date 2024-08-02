@@ -2,27 +2,45 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 
-st.header('Venta de Vehiculos')        
-car_data = pd.read_csv('vehicles_us.csv') # leer los datos
-hist_button = st.button('Construir histograma') # crear un botón
-        
-if hist_button: # al hacer clic en el botón
-            # escribir un mensaje
-            st.write('Creación de un histograma para el conjunto de datos de anuncios de venta de coches')
-            
-            # crear un histograma
-            fig = px.histogram(car_data, x="odometer")
-        
-            # mostrar un gráfico Plotly interactivo
-            st.plotly_chart(fig, use_container_width=True)
+# Cargar los datos
+car_data = pd.read_csv('vehicles_us.csv')
 
-# crear una casilla de verificación
-build_histogram = st.checkbox('Construir un histograma')
+# Crear la interfaz de usuario
+st.header('Venta de Vehículos')
 
-if build_histogram: # si la casilla de verificación está seleccionada
-            st.write('Construir un histograma para la columna price')
-                # crear un histograma
-            fig = px.histogram(car_data, x="price")
-        
-            # mostrar un gráfico Plotly interactivo
-            st.plotly_chart(fig, use_container_width=True)
+# Primer histograma: Odómetro
+if st.button('Construir histograma de odómetro', key='hist_odometer'):
+    fig = px.histogram(car_data, x="odometer", title="Distribución de Odómetro")
+    st.plotly_chart(fig, use_container_width=True)
+
+# Segundo histograma: Precio por fabricante
+st.header('Comparación de precios entre fabricantes')
+
+# Selección de fabricantes
+manufacturers = car_data['model'].unique()
+manufacturer1 = st.selectbox('Seleccionar fabricante 1', manufacturers)
+manufacturer2 = st.selectbox('Seleccionar fabricante 2', manufacturers)
+
+# Normalizar el histograma
+normalize = st.checkbox('Normalizar histograma')
+
+# Crear el histograma
+if st.button('Construir histograma de precios', key='hist_price'):
+    # Filtrar los datos según los fabricantes seleccionados
+    filtered_data = car_data[(car_data['model'] == manufacturer1) | 
+                             (car_data['model'] == manufacturer2)]
+    
+    # Crear el gráfico
+    fig = px.histogram(filtered_data, x="price", color="model",
+                      barmode='overlay',
+                      histnorm='percent' if normalize else None,
+                      title="Distribución de Precios por Fabricante")
+
+#Tercer Histograma: Relación entre precio y modelo por tipo de vehículo
+st.header('Relación entre precio y modelo por tipo de vehículo')
+# Crear el gráfico de barras apiladas
+fig = px.scatter(car_data, x="model", y="price", color="type",
+                 title="Relación entre precio y modelo por tipo de vehículo")
+
+# Mostrar el gráfico
+st.plotly_chart(fig, use_container_width=True)
