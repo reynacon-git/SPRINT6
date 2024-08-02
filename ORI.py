@@ -39,8 +39,7 @@ if st.button('Construir histograma de precios', key='hist_price'):
 #Tercer Histograma: Relación entre precio y modelo por tipo de vehículo
 st.header('Relación entre precio y modelo por tipo de vehículo')
 # Crear el gráfico de barras apiladas
-fig = px.scatter(car_data, x="model", y="price", color="type",
-                 title="Relación entre precio y modelo por tipo de vehículo")
+fig = px.scatter(car_data, x="model", y="price", color="type")
 
 # Mostrar el gráfico
 st.plotly_chart(fig, use_container_width=True)
